@@ -61,7 +61,8 @@ export default function ConnectionBox() {
 
                 if (response.status === 200) {
                     const data = await response.json();
-                    setData(data);
+                    const connections = data.map((item: any) => new ConnectionsResponseData(item[0], item[1], item[2]));
+                    setData(connections);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
