@@ -1,7 +1,6 @@
 "use client";
 import * as d3 from "d3";
 import data from "./paths_teams_lebron.json";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 interface PlayerNode {
     id: number;
@@ -135,12 +134,7 @@ export default function DataVisual() {
     const data_node = data as PlayerNode;
     const data_wrapper = {"id": 0, "team_name": "root", "season": "root", "players": [data_node]} as TeamNode;
 
-    return <TransformWrapper>
-            <TransformComponent>
-                <RadialTree data={data_wrapper}/>
-            </TransformComponent>
-    </TransformWrapper>
-        // <RadialTree data={data_wrapper}/>
+    return <RadialTree data={data_wrapper}/>
 }
 
 
