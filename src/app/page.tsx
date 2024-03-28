@@ -3,7 +3,7 @@ import DataVisual from "@/app/RadialTree";
 
 export default function Home() {
   return (
-    <main className="flex items-center justify-center min-h-screen px-32 h-full">
+    <main className="flex items-center justify-center min-h-screen h-full">
         <DataVisual />
 
         {/*<ConnectionBox />*/}
