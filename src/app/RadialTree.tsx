@@ -1,6 +1,7 @@
 "use client";
 import * as d3 from "d3";
 import data from "./paths_teams_lebron.json";
+import {HierarchyPointLink, HierarchyPointNode} from "d3";
 
 interface PlayerNode {
     id: number;
@@ -93,12 +94,6 @@ const RadialTree: React.FC<Props> = ({data}: Props) => {
     const cy = height * 0.5; // adjust as needed to fit
     const radius = Math.min(width, height) / 2;
 
-    function handleZoom(e: any) {
-        d3.select("g").attr("transform", e.transform);
-    }
-
-    const zoom = d3.zoom().on("zoom", handleZoom);
-
     const tree = d3.tree<TeamNode>()
         .size([5 * Math.PI, radius])
         .separation((a, b) => (a.parent == b.parent ? 1 : 2) / (a.depth ?? 1));
@@ -115,17 +110,17 @@ const RadialTree: React.FC<Props> = ({data}: Props) => {
                     key={i}
                     className={teamColor(link.target.data.team_name)}
                     // className="stroke-slate-300"
-                    d={d3.linkRadial()
-                        .angle(d=>d.x)
-                        .radius(d=> d.y)(link)}></path>
+                    d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
+                        .angle((d) => d.x)
+                        .radius(d => d.y)(link)!}></path>
             ))}
         </g>
-                <g>
-                    {root.descendants().map((node, i) => (
-                        <circle key={i} r={1} className="fill-slate-300" id={node.data.team_name}
-                                transform={`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y},0)`}></circle>
-                    ))}
-                </g>
+        <g>
+            {root.descendants().map((node, i) => (
+                <circle key={i} r={1} className="fill-slate-300" id={node.data.team_name}
+                        transform={`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y},0)`}></circle>
+            ))}
+        </g>
     </svg>
 }
 
