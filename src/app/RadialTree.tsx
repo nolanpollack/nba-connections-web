@@ -1,7 +1,9 @@
 "use client";
 import * as d3 from "d3";
-import data from "./paths_teams_lebron.json";
 import {HierarchyPointLink, HierarchyPointNode} from "d3";
+import data from "./paths_teams_lebron.json";
+import {animated, useSpring} from "@react-spring/web";
+import {useDrag} from "@use-gesture/react";
 
 interface PlayerNode {
     id: number;
@@ -87,12 +89,17 @@ function teamColor(team: string) {
     }
 }
 
-const RadialTree: React.FC<Props> = ({data}: Props) => {
+const RadialTree = ({data}: Props) => {
     const width = 1000;
-    const height = width;
     const cx = width * 0.5; // adjust as needed to fit
-    const cy = height * 0.5; // adjust as needed to fit
-    const radius = Math.min(width, height) / 2;
+    const cy = width * 0.5;
+    const radius = Math.min(width, width) / 2;
+
+    const [{x, y}, api] = useSpring(() => ({x: 0, y: 0}));
+
+    const bind = useDrag(({movement: [mx, my]}) => {
+        api.start({x: mx, y: my});
+    });
 
     const tree = d3.tree<TeamNode>()
         .size([5 * Math.PI, radius])
@@ -102,14 +109,13 @@ const RadialTree: React.FC<Props> = ({data}: Props) => {
     const root = tree(d3.hierarchy(data, d => d.players?.map(p => p.teams ?? []).flat())
         .sort((a, b) => d3.ascending(a.data.team_name, b.data.team_name)));
 
-
-    return <svg viewBox={`${-cx} ${-cy} ${width} ${height}`} className="text-md h-full w-auto border-2">
+    return <animated.svg viewBox={`${-cx} ${-cy} ${width} ${width}`} {...bind()} style={{x, y}}
+                         className="text-md h-full w-auto border-2 touch-none">
         <g fill="none" stroke="#555" strokeOpacity={.3} strokeWidth={1.5}>
             {root.links().map((link, i) => (
                 <path
                     key={i}
                     className={teamColor(link.target.data.team_name)}
-                    // className="stroke-slate-300"
                     d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
                         .angle((d) => d.x)
                         .radius(d => d.y)(link)!}></path>
@@ -121,7 +127,7 @@ const RadialTree: React.FC<Props> = ({data}: Props) => {
                         transform={`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y},0)`}></circle>
             ))}
         </g>
-    </svg>
+    </animated.svg>
 }
 
 
