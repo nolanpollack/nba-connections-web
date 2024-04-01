@@ -3,7 +3,8 @@ import * as d3 from "d3";
 import {HierarchyPointLink, HierarchyPointNode} from "d3";
 import data from "./paths_teams_lebron.json";
 import {animated, useSpring} from "@react-spring/web";
-import {useDrag} from "@use-gesture/react";
+import {useGesture} from "@use-gesture/react";
+import {useState} from "react";
 
 interface PlayerNode {
     id: number;
@@ -91,15 +92,32 @@ function teamColor(team: string) {
 
 const RadialTree = ({data}: Props) => {
     const width = 1000;
+    const height = 1000;
     const cx = width * 0.5; // adjust as needed to fit
     const cy = width * 0.5;
     const radius = Math.min(width, width) / 2;
 
-    const [{x, y}, api] = useSpring(() => ({x: 0, y: 0}));
+    // const [props, api] = useSpring(() => ({x: 0, y: 0}));
+    const [{viewBox, scale}, api] = useSpring(() => ({viewBox: `${-cx} ${-cy} ${width} ${height}`, scale: 1}));
 
-    const bind = useDrag(({movement: [mx, my]}) => {
-        api.start({x: mx, y: my});
-    });
+    const bind = useGesture(
+        {
+            onDrag: ({down, offset: [ox, oy]}) => {
+                api.start({viewBox: `${-cx - ox} ${-cy - oy} ${width} ${height}`, immediate: down})
+                // api.start({x: ox, y: oy, immediate: down});
+            },
+            onPinch: ({offset: [scale, angle]}) => {
+                // setScale(scale);
+                api.start({scale: scale, immediate: true});
+                // api.start({viewBox: `${-cx} ${-cy} ${width} ${width}`, immediate: true});
+            }
+        },
+        {
+            drag: {
+                // bounds: {left: -100, right: 100, top: -100, bottom: 100},
+            }
+        });
+
 
     const tree = d3.tree<TeamNode>()
         .size([5 * Math.PI, radius])
@@ -109,22 +127,24 @@ const RadialTree = ({data}: Props) => {
     const root = tree(d3.hierarchy(data, d => d.players?.map(p => p.teams ?? []).flat())
         .sort((a, b) => d3.ascending(a.data.team_name, b.data.team_name)));
 
-    return <animated.svg viewBox={`${-cx} ${-cy} ${width} ${width}`} {...bind()} style={{x, y}}
-                         className="text-md h-full w-auto border-2 touch-none">
-        <g fill="none" stroke="#555" strokeOpacity={.3} strokeWidth={1.5}>
+    return <animated.svg viewBox={viewBox} {...bind()}
+                         className="text-md h-full w-auto border-2 touch-none rounded-md">
+        <g fill="none" stroke="#555" strokeOpacity={.3}>
             {root.links().map((link, i) => (
-                <path
+                <animated.path
+                    onMouseOver = {() => console.log("hover")}
                     key={i}
+                    strokeWidth={scale}
                     className={teamColor(link.target.data.team_name)}
-                    d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
+                    d={scale.to(s => d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
                         .angle((d) => d.x)
-                        .radius(d => d.y)(link)!}></path>
+                        .radius(d => d.y * s)(link)!)}></animated.path>
             ))}
         </g>
         <g>
             {root.descendants().map((node, i) => (
-                <circle key={i} r={1} className="fill-slate-300" id={node.data.team_name}
-                        transform={`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y},0)`}></circle>
+                <animated.circle key={i} r={scale} className="fill-slate-300" id={node.data.team_name}
+                        transform={scale.to( s =>`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y * s},0)`)}></animated.circle>
             ))}
         </g>
     </animated.svg>
