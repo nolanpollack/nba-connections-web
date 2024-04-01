@@ -1,10 +1,11 @@
 "use client";
 import * as d3 from "d3";
-import {HierarchyPointLink, HierarchyPointNode} from "d3";
+import {HierarchyPointLink, HierarchyPointNode, zoom} from "d3";
 import data from "./paths_teams_lebron.json";
 import {animated, useSpring} from "@react-spring/web";
+import { Zoom } from '@visx/zoom';
 import {useGesture} from "@use-gesture/react";
-import {useState} from "react";
+import {WheelEvent} from "react";
 
 interface PlayerNode {
     id: number;
@@ -91,25 +92,30 @@ function teamColor(team: string) {
 }
 
 const RadialTree = ({data}: Props) => {
-    const width = 1000;
-    const height = 1000;
-    const cx = width * 0.5; // adjust as needed to fit
-    const cy = width * 0.5;
+    const widthInit = 1000;
+    const heightInit = 1000;
+    let width = widthInit;
+    let height = heightInit;
+    const cx = width * -0.5;
+    const cy = width * -0.5;
+    let offsetX = 0;
+    let offsetY = 0;
+    let zoomOffset = 0;
     const radius = Math.min(width, width) / 2;
 
-    // const [props, api] = useSpring(() => ({x: 0, y: 0}));
-    const [{viewBox, scale}, api] = useSpring(() => ({viewBox: `${-cx} ${-cy} ${width} ${height}`, scale: 1}));
+    const [{viewBox, scale}, api] = useSpring(() => ({viewBox: `${cx} ${cy} ${width} ${height}`, scale: 1}));
 
     const bind = useGesture(
         {
             onDrag: ({down, offset: [ox, oy]}) => {
-                api.start({viewBox: `${-cx - ox} ${-cy - oy} ${width} ${height}`, immediate: down})
-                // api.start({x: ox, y: oy, immediate: down});
+                const change = offsetX - ox;
+                console.log(change);
+                offsetX = ox;
+                offsetY = oy;
+                api.start({viewBox: `${cx - offsetX - zoomOffset} ${cy - offsetY - zoomOffset} ${width} ${height}`, immediate: down})
             },
             onPinch: ({offset: [scale, angle]}) => {
-                // setScale(scale);
                 api.start({scale: scale, immediate: true});
-                // api.start({viewBox: `${-cx} ${-cy} ${width} ${width}`, immediate: true});
             }
         },
         {
@@ -117,6 +123,20 @@ const RadialTree = ({data}: Props) => {
                 // bounds: {left: -100, right: 100, top: -100, bottom: 100},
             }
         });
+
+    function handleWheel(event: WheelEvent<SVGElement>) {
+        if (width + event.deltaY < 100 || height + event.deltaY < 100 || width + event.deltaY > 1000 || height + event.deltaY > 1000) {
+            return;
+        }
+        width = width + event.deltaY;
+        height = height + event.deltaY;
+
+        // offsetX = offsetX + event.deltaY / 2;
+        // offsetY = offsetY + event.deltaY / 2;
+
+        zoomOffset = zoomOffset + event.deltaY / 2;
+        api.start({viewBox: `${cx - offsetX - zoomOffset} ${cy - offsetY - zoomOffset} ${width} ${height}`});
+    }
 
 
     const tree = d3.tree<TeamNode>()
@@ -128,23 +148,22 @@ const RadialTree = ({data}: Props) => {
         .sort((a, b) => d3.ascending(a.data.team_name, b.data.team_name)));
 
     return <animated.svg viewBox={viewBox} {...bind()}
+                         onWheel={handleWheel}
                          className="text-md h-full w-auto border-2 touch-none rounded-md">
-        <g fill="none" stroke="#555" strokeOpacity={.3}>
+        <g fill="none" stroke="#555" strokeOpacity={.3} strokeWidth={1}>
             {root.links().map((link, i) => (
-                <animated.path
-                    onMouseOver = {() => console.log("hover")}
+                <path
                     key={i}
-                    strokeWidth={scale}
                     className={teamColor(link.target.data.team_name)}
-                    d={scale.to(s => d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
+                    d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
                         .angle((d) => d.x)
-                        .radius(d => d.y * s)(link)!)}></animated.path>
+                        .radius(d => d.y)(link)!}></path>
             ))}
         </g>
         <g>
             {root.descendants().map((node, i) => (
                 <animated.circle key={i} r={scale} className="fill-slate-300" id={node.data.team_name}
-                        transform={scale.to( s =>`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y * s},0)`)}></animated.circle>
+                                 transform={scale.to(s => `rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y * s},0)`)}></animated.circle>
             ))}
         </g>
     </animated.svg>
