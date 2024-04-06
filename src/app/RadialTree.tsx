@@ -31,7 +31,7 @@ function Path({link, handlePathHover, handlePopupClose}: {
     handlePathHover: (team: TeamNode) => void,
     handlePopupClose: () => void
 }) {
-    const [{strokeWidth, strokeOpacity}, api] = useSpring(() => ({strokeWidth: 1, strokeOpacity:.3}));
+    const [{strokeWidth, strokeOpacity}, api] = useSpring(() => ({strokeWidth: 1, strokeOpacity: .3}));
 
     function onHover() {
         api.start({strokeWidth: 1.75, strokeOpacity: 1});
@@ -196,8 +196,6 @@ function RadialTree({data, handlePathHover, handlePopupClose}: Props) {
                 </animated.g>
             </svg>)}
     </Zoom>
-
-
 }
 
 
@@ -219,13 +217,17 @@ export default function DataVisual() {
     }
 
     return <div className="h-full w-auto">
+        <h1
+            className="bg-gradient-to-r from-purple-600 to-yellow-600 bg-clip-text text-transparent text-5xl font-extrabold">
+            {data_node.name}</h1>
         <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}/>
-        {popupOpen && <div className={"absolute rounded-md bg-stone-200 p-4 border-black shadow-xl top-2 left-2 divide-y"}>
-            <h1 className="text-xl">{popupData.season + " " + popupData.team_name}</h1>
-            <ul>
-                {popupData.players?.map((player) => <li key={player.id}>{player.name}</li>)}
-            </ul>
-        </div>}
+        {popupOpen &&
+            <div className={"absolute rounded-md bg-stone-200 p-4 border-black shadow-xl top-2 left-2 divide-y"}>
+                <h1 className="text-xl">{popupData.season + " " + popupData.team_name}</h1>
+                <ul>
+                    {popupData.players?.map((player) => <li key={player.id}>{player.name}</li>)}
+                </ul>
+            </div>}
     </div>
 }
 
