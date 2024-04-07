@@ -1,11 +1,11 @@
 "use client";
 import * as d3 from "d3";
-import {HierarchyPointLink, HierarchyPointNode, zoom} from "d3";
-import data from "./paths_teams_lebron.json";
-import {animated, useSpring} from "@react-spring/web";
-import { Zoom } from '@visx/zoom';
-import {useGesture} from "@use-gesture/react";
-import {WheelEvent} from "react";
+import {HierarchyPointLink, HierarchyPointNode} from "d3";
+import data from "./paths_teams_victor_wembanyama.json";
+import {animated, to, useSpring} from "@react-spring/web";
+import {Zoom} from '@visx/zoom';
+import {TransformMatrix} from "@visx/zoom/lib/types";
+import {useState} from "react";
 
 interface PlayerNode {
     id: number;
@@ -22,6 +22,37 @@ interface TeamNode {
 
 interface Props {
     data: TeamNode;
+    handlePathHover: (team: TeamNode) => void;
+    handlePopupClose: () => void;
+}
+
+function Path({link, handlePathHover, handlePopupClose}: {
+    link: HierarchyPointLink<TeamNode>,
+    handlePathHover: (team: TeamNode) => void,
+    handlePopupClose: () => void
+}) {
+    const [{strokeWidth, strokeOpacity}, api] = useSpring(() => ({strokeWidth: 1, strokeOpacity:.3}));
+
+    function onHover() {
+        api.start({strokeWidth: 1.75, strokeOpacity: 1});
+        handlePathHover(link.target.data);
+    }
+
+    function onMouseOut() {
+        api.start({strokeWidth: 1, strokeOpacity: .3});
+        handlePopupClose();
+    }
+
+    return <animated.path
+        strokeWidth={strokeWidth}
+        strokeOpacity={strokeOpacity}
+        onMouseOver={onHover}
+        onMouseOut={onMouseOut}
+        className={teamColor(link.target.data.team_name)}
+        d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
+            .angle((d) => d.x)
+            .radius(d => d.y)(link)!}>
+    </animated.path>
 }
 
 function teamColor(team: string) {
@@ -91,53 +122,13 @@ function teamColor(team: string) {
     }
 }
 
-const RadialTree = ({data}: Props) => {
-    const widthInit = 1000;
-    const heightInit = 1000;
-    let width = widthInit;
-    let height = heightInit;
-    const cx = width * -0.5;
-    const cy = width * -0.5;
-    let offsetX = 0;
-    let offsetY = 0;
-    let zoomOffset = 0;
+function RadialTree({data, handlePathHover, handlePopupClose}: Props) {
+    const numLayers = 10;
+    const width = 1000;
+    const height = 1000;
+    const cx = 0;
+    const cy = 0;
     const radius = Math.min(width, width) / 2;
-
-    const [{viewBox, scale}, api] = useSpring(() => ({viewBox: `${cx} ${cy} ${width} ${height}`, scale: 1}));
-
-    const bind = useGesture(
-        {
-            onDrag: ({down, offset: [ox, oy]}) => {
-                const change = offsetX - ox;
-                console.log(change);
-                offsetX = ox;
-                offsetY = oy;
-                api.start({viewBox: `${cx - offsetX - zoomOffset} ${cy - offsetY - zoomOffset} ${width} ${height}`, immediate: down})
-            },
-            onPinch: ({offset: [scale, angle]}) => {
-                api.start({scale: scale, immediate: true});
-            }
-        },
-        {
-            drag: {
-                // bounds: {left: -100, right: 100, top: -100, bottom: 100},
-            }
-        });
-
-    function handleWheel(event: WheelEvent<SVGElement>) {
-        if (width + event.deltaY < 100 || height + event.deltaY < 100 || width + event.deltaY > 1000 || height + event.deltaY > 1000) {
-            return;
-        }
-        width = width + event.deltaY;
-        height = height + event.deltaY;
-
-        // offsetX = offsetX + event.deltaY / 2;
-        // offsetY = offsetY + event.deltaY / 2;
-
-        zoomOffset = zoomOffset + event.deltaY / 2;
-        api.start({viewBox: `${cx - offsetX - zoomOffset} ${cy - offsetY - zoomOffset} ${width} ${height}`});
-    }
-
 
     const tree = d3.tree<TeamNode>()
         .size([5 * Math.PI, radius])
@@ -147,26 +138,66 @@ const RadialTree = ({data}: Props) => {
     const root = tree(d3.hierarchy(data, d => d.players?.map(p => p.teams ?? []).flat())
         .sort((a, b) => d3.ascending(a.data.team_name, b.data.team_name)));
 
-    return <animated.svg viewBox={viewBox} {...bind()}
-                         onWheel={handleWheel}
-                         className="text-md h-full w-auto border-2 touch-none rounded-md">
-        <g fill="none" stroke="#555" strokeOpacity={.3} strokeWidth={1}>
-            {root.links().map((link, i) => (
-                <path
-                    key={i}
-                    className={teamColor(link.target.data.team_name)}
-                    d={d3.linkRadial<any, HierarchyPointLink<TeamNode>, HierarchyPointNode<TeamNode>>()
-                        .angle((d) => d.x)
-                        .radius(d => d.y)(link)!}></path>
-            ))}
-        </g>
-        <g>
-            {root.descendants().map((node, i) => (
-                <animated.circle key={i} r={scale} className="fill-slate-300" id={node.data.team_name}
-                                 transform={scale.to(s => `rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y * s},0)`)}></animated.circle>
-            ))}
-        </g>
-    </animated.svg>
+    const initialTransform = {
+        scaleX: 1,
+        scaleY: 1,
+        translateX: width * .5,
+        translateY: height * .5,
+        skewX: 0,
+        skewY: 0,
+    }
+
+    const [props, api] = useSpring(() => (initialTransform));
+
+    function updateTransform(isDragging: boolean, transform: TransformMatrix) {
+        const {scaleX, scaleY, translateX, translateY, skewX, skewY} = transform;
+        api.start({translateX: translateX, translateY: translateY, immediate: isDragging});
+        api.start({scaleX: scaleX, scaleY: scaleY});
+        return props;
+    }
+
+    return <Zoom<SVGSVGElement>
+        width={width}
+        height={height}
+        scaleXMin={1}
+        scaleXMax={8}
+        scaleYMin={1}
+        scaleYMax={8}
+        initialTransformMatrix={initialTransform}>
+        {(zoom) => (
+            <svg viewBox={`${cx} ${cy} ${width} ${height}`}
+                 className="text-md h-full w-auto border-2 touch-none rounded-md"
+                 ref={zoom.containerRef}
+                 onWheel={() => updateTransform(zoom.isDragging, zoom.transformMatrix)}
+                 onMouseDown={() => updateTransform(zoom.isDragging, zoom.transformMatrix)}
+                 onMouseMove={() => updateTransform(zoom.isDragging, zoom.transformMatrix)}
+            >
+                <animated.g style={
+                    {
+                        transform: to(
+                            [props.scaleX, props.scaleY, props.translateX, props.translateY, props.skewX, props.skewY],
+                            (scaleX, scaleY, translateX, translateY, skewX, skewY) => {
+                                return `matrix(${scaleX}, 0, 0, ${scaleY}, ${translateX}, ${translateY}) skew(${skewX}, ${skewY})`
+                            })
+                    }
+                }>
+                    <g fill="none" stroke="#555" strokeOpacity={.3} strokeWidth={1}>
+                        {root.links().filter((link) => link.source.depth < numLayers).map((link, i) => (
+                            <Path key={i} link={link} handlePathHover={handlePathHover}
+                                  handlePopupClose={handlePopupClose}/>
+                        ))}
+                    </g>
+                    <g>
+                        {root.descendants().filter((node) => node.depth < numLayers + 1).map((node, i) => (
+                            <circle key={i} r={1} className="fill-slate-300" id={node.data.team_name}
+                                    transform={`rotate(${node.x * 180 / Math.PI - 90}) translate(${node.y},0)`}></circle>
+                        ))}
+                    </g>
+                </animated.g>
+            </svg>)}
+    </Zoom>
+
+
 }
 
 
@@ -174,7 +205,28 @@ export default function DataVisual() {
     const data_node = data as PlayerNode;
     const data_wrapper = {"id": 0, "team_name": "root", "season": "root", "players": [data_node]} as TeamNode;
 
-    return <RadialTree data={data_wrapper}/>
+    const [popupOpen, setPopupOpen] = useState(false);
+    const [popupData, setPopupData] = useState({} as TeamNode);
+    const [popupPosition, setPopupPosition] = useState([0, 0] as [number, number]);
+
+    function handlePathHover(team: TeamNode) {
+        setPopupOpen(true);
+        setPopupData(team);
+    }
+
+    function handlePopupClose() {
+        setPopupOpen(false);
+    }
+
+    return <div className="h-full w-auto">
+        <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}/>
+        {popupOpen && <div className={"absolute rounded-md bg-stone-200 p-4 border-black shadow-xl top-2 left-2 divide-y"}>
+            <h1 className="text-xl">{popupData.season + " " + popupData.team_name}</h1>
+            <ul>
+                {popupData.players?.map((player) => <li key={player.id}>{player.name}</li>)}
+            </ul>
+        </div>}
+    </div>
 }
 
 
