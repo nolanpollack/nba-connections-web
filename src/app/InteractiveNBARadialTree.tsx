@@ -1,5 +1,4 @@
 "use client";
-import data from "./paths_teams_lebron.json";
 import React, {FormEvent, useState} from "react";
 import RadialTree from "@/app/components/RadialTree";
 import {TeamNode, PlayerNode} from "@/app/classes/Nodes";
@@ -27,9 +26,8 @@ function TeamInfo({popupPosition, popupData}: { popupPosition: { x: number, y: n
     </div>
 }
 
-export default function InteractiveNBARadialTree() {
-    const data_node = data as PlayerNode;
-    const data_wrapper= {"id": 0, "team_name": "root", "season": "root", "players": [data_node]} as TeamNode;
+export default function InteractiveNBARadialTree({dataNode}: { dataNode: PlayerNode }) {
+    const data_wrapper= {"id": 0, "team_name": "root", "season": "root", "players": [dataNode]} as TeamNode;
 
     let playerMap: { [index: number]: { previousPlayer: PlayerNode, player: PlayerNode, through: TeamNode } } = {};
     let nameToPlayerID: { [index: string]: number } = {};
@@ -50,7 +48,7 @@ export default function InteractiveNBARadialTree() {
         }
     }
 
-    createPaths(data_node, data_node, data_wrapper);
+    createPaths(dataNode, dataNode, data_wrapper);
 
     const [activeTeams, setActiveTeams] = useState([] as TeamNode[]);
 
@@ -66,10 +64,6 @@ export default function InteractiveNBARadialTree() {
 
     function handlePopupClose() {
         setPopupOpen(false);
-    }
-
-    function onFromSubmit(e: FormEvent) {
-        console.log("Form submitted");
     }
 
     function onToSubmit(e: FormEvent<HTMLFormElement>) {
@@ -88,7 +82,7 @@ export default function InteractiveNBARadialTree() {
             let player = playerMap[playerID];
             const path = [[player.player, null] as [PlayerNode, TeamNode | null]];
 
-            while (player.player != data_node) {
+            while (player.player != dataNode) {
                 path.unshift([player.previousPlayer, player.through]);
                 player = playerMap[player.previousPlayer.id];
             }
@@ -96,19 +90,16 @@ export default function InteractiveNBARadialTree() {
             const newActiveTeams = path.map(([_, team]) => team).filter((team) => team != null) as TeamNode[];
 
             setActiveTeams(newActiveTeams);
-
-            console.log(path);
         } else {
             setActiveTeams([]);
         }
     }
 
 
-    data_node.teams?.sort((a, b) => a.season.localeCompare(b.season));
+    dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
 
     return <div className="flex flex-col h-full w-full">
-        <TitleInput placeholder={"Player Name"} onSubmit={onFromSubmit}/>
         <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}
                     activeTeams={activeTeams}/>
         <TitleInput placeholder={"Find Connection"} onSubmit={onToSubmit}/>
