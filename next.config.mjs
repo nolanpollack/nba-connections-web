@@ -7,6 +7,15 @@ const nextConfig = {
                 destination: 'https://9fws378c86.execute-api.us-east-2.amazonaws.com/test/:path*',
             },
         ];
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'cdn.nba.com',
+                port: '',
+            }
+        ]
     }
 };
 
