@@ -19,8 +19,8 @@ export default function Home() {
 
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
-        const playerName = formData.get("player");
-        if (!playerName) {
+        const playerName = formData.get("player") as string | null;
+        if (!playerName || playerName.toLowerCase() == data?.name.toLowerCase()) {
             return;
         }
 
@@ -40,7 +40,7 @@ export default function Home() {
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         }, 1000);
     }
@@ -49,8 +49,9 @@ export default function Home() {
         <main className="flex items-center justify-center min-h-screen h-full flex-col">
             <TitleInput placeholder={"Player Name"} onSubmit={handleSubmit} required={true}/>
             {loading &&
-                <Image src={basketball} alt="loading" height={75} className="animate-spin"/>}
-            {data && <InteractiveNBARadialTree dataNode={data}/>}
+                    <Image src={basketball} alt="loading" className="w-14"/>
+                }
+            {!loading && data && <InteractiveNBARadialTree dataNode={data}/>}
         </main>
     );
 }

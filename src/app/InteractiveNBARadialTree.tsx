@@ -35,7 +35,7 @@ export default function InteractiveNBARadialTree({dataNode}: { dataNode: PlayerN
     // TODO: Use memo
     function createPaths(data: PlayerNode, previousNode: PlayerNode, through: TeamNode) {
         playerMap[data.id] = {previousPlayer: previousNode, player: data, through: through};
-        nameToPlayerID[data.name] = data.id;
+        nameToPlayerID[data.name.toLowerCase()] = data.id;
 
         if (data.teams) {
             data.teams.forEach((team) => {
@@ -69,10 +69,10 @@ export default function InteractiveNBARadialTree({dataNode}: { dataNode: PlayerN
     function onToSubmit(e: FormEvent<HTMLFormElement>) {
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
-        const playerName = formData.get("player");
+        const playerName = formData.get("player") as string | null;
 
         if (playerName) {
-            const playerID = nameToPlayerID[playerName as string];
+            const playerID = nameToPlayerID[playerName.toLowerCase()];
             if (!playerID) {
                 console.log("Player not found: " + playerName);
                 setActiveTeams([]);
@@ -99,7 +99,7 @@ export default function InteractiveNBARadialTree({dataNode}: { dataNode: PlayerN
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
 
-    return <div className="flex flex-col h-full w-full">
+    return <div className="flex flex-1 flex-col h-5/6 w-full">
         <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}
                     activeTeams={activeTeams}/>
         <TitleInput placeholder={"Find Connection"} onSubmit={onToSubmit}/>

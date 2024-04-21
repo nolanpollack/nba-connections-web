@@ -14,7 +14,7 @@ export default function Path({link, handlePathHover, handlePopupClose, activeTea
     const active = activeTeams ? activeTeams.includes(link.target.data) : false;
     const strokeProperties = useMemo(() => ({
         strokeWidth: active ? 3 : 1,
-        strokeOpacity: active ? 1 : 0.3
+        strokeOpacity: active ? 1 : 0.3,
     }), [active]);
 
 
