@@ -12,7 +12,6 @@ function TeamInfo({popupPosition, popupData}: { popupPosition: { x: number, y: n
                         top: popupPosition.y,
                         left: popupPosition.x
                     }
-
                 }>
         <h1 className="text-xl">{popupData.season + " " + popupData.team_name}</h1>
         <h2>{}</h2>
