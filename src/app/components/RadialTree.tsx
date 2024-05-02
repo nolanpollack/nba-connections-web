@@ -17,7 +17,7 @@ export default function RadialTree({data, handlePathHover, handlePopupClose, act
     const height = 1000;
     const cx = 0;
     const cy = 0;
-    const radius = Math.min(width, width) / 2;
+    const radius = Math.min(width, width) / 2 + 50;
 
     const tree = d3.tree<TeamNode>()
         .size([2 * Math.PI, radius])
@@ -39,7 +39,7 @@ export default function RadialTree({data, handlePathHover, handlePopupClose, act
     const [props, api] = useSpring(() => (initialTransform));
 
     return <svg viewBox={`${cx} ${cy} ${width} ${height}`}
-                className="text-md flex-grow touch-none border-2">
+                className="text-md flex-grow touch-none">
         <animated.g
             style={
                 {

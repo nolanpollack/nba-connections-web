@@ -9,7 +9,7 @@ import basketball from "@/assets/basketball.svg";
 import Image from "next/image";
 
 export default function Home() {
-    const [data, setData] = useState<PlayerNode>();
+    const [data, setData] = useState<PlayerNode>(lebronData);
     const [loading, setLoading] = useState<boolean>(false);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -45,13 +45,14 @@ export default function Home() {
         }, 1000);
     }
 
+
     return (
         <main className="flex items-center justify-center min-h-screen h-full">
-            {/*<TitleInput placeholder={"Player Name"} onSubmit={handleSubmit} required={true}/>*/}
+            {!data && <TitleInput placeholder={"Player Name"} onSubmit={handleSubmit} required={true}/>}
             {loading &&
                     <Image src={basketball} alt="loading" className="w-14"/>
                 }
-            {!loading && data && <InteractiveNBARadialTree dataNode={data}/>}
+            {!loading && data && <InteractiveNBARadialTree dataNode={data} handleSearch={handleSubmit}/>}
         </main>
     );
 }
