@@ -46,8 +46,8 @@ export default function Home() {
     }
 
     return (
-        <main className="flex items-center justify-center min-h-screen h-full flex-col">
-            <TitleInput placeholder={"Player Name"} onSubmit={handleSubmit} required={true}/>
+        <main className="flex items-center justify-center min-h-screen h-full">
+            {/*<TitleInput placeholder={"Player Name"} onSubmit={handleSubmit} required={true}/>*/}
             {loading &&
                     <Image src={basketball} alt="loading" className="w-14"/>
                 }

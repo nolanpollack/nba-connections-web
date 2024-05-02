@@ -98,10 +98,10 @@ export default function InteractiveNBARadialTree({dataNode}: { dataNode: PlayerN
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
 
-    return <div className="flex flex-1 flex-col h-5/6 w-full">
+    return <div className="flex flex-1 h-full text-4xl">
+        <TitleInput placeholder={"Find Connection"} onSubmit={onToSubmit}/>
         <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}
                     activeTeams={activeTeams}/>
-        <TitleInput placeholder={"Find Connection"} onSubmit={onToSubmit}/>
 
         {popupOpen && <TeamInfo popupPosition={popupPosition} popupData={popupData}/>}
     </div>
