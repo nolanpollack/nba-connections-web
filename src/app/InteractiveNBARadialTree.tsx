@@ -1,7 +1,7 @@
 import React, {FormEvent, useState} from "react";
 import RadialTree from "@/app/components/RadialTree";
 import {PlayerNode, TeamNode} from "@/app/classes/Nodes";
-import TitleInput from "@/app/components/TitleInput";
+import SideBar from "@/app/components/SideBar";
 
 
 function TeamInfo({popupPosition, popupData}: { popupPosition: { x: number, y: number }, popupData: TeamNode }) {
@@ -99,20 +99,10 @@ export default function InteractiveNBARadialTree({dataNode, handleSearch}: {
 
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
-
-    return <div className="flex flex-1 h-full text-4xl">
-        {/*TODO: Move to separate component*/}
-        <div className="my-4 flex flex-col justify-center items-center">
-            <TitleInput placeholder={"Player Name"} onSubmit={handleSearch}/>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="4"
-                 className="w-6 h-6 stroke-stone-400 my-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
-            </svg>
-            <TitleInput placeholder={"Find Connection"} onSubmit={onToSubmit}/>
-        </div>
+    return <div className="flex flex-1 h-full">
+        <SideBar onFind={onToSubmit} onSearch={handleSearch} activeTeams={activeTeams} playerName={dataNode.name}/>
         <RadialTree data={data_wrapper} handlePathHover={handlePathHover} handlePopupClose={handlePopupClose}
                     activeTeams={activeTeams}/>
-
         {popupOpen && <TeamInfo popupPosition={popupPosition} popupData={popupData}/>}
     </div>
 }
