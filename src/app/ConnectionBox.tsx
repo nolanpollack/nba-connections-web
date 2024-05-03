@@ -1,18 +1,18 @@
 import Arrow from "@/app/components/Arrow";
 
 interface Props {
-    playerName: string;
+    playerName?: string;
     teamName: string;
 }
 
 export default function ConnectionBox({playerName, teamName}: Props) {
-    return <div>
+    return <>
         <div className="flex items-center">
             <Arrow/>
             <h2 className="text-stone-200 text-lg ml-2 font-bold">{teamName}</h2>
         </div>
-        <div className="bg-stone-300 rounded-md px-4 py-2">{playerName}</div>
-    </div>
+        {playerName && <h2 className="text-white text-lg px-4 py-2">{playerName}</h2>}
+    </>
 }
 
 // async function fetchConnectionResponse(p1: string, p2: string) {

@@ -3,7 +3,6 @@ import React from "react";
 import ConnectionBox from "@/app/ConnectionBox";
 import Arrow from "@/app/components/Arrow";
 import {TeamNode} from "@/app/classes/Nodes";
-import Image from "next/image";
 
 interface Props {
     onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -13,11 +12,17 @@ interface Props {
 }
 
 export default function SideBar({onSearch, onFind, activeTeams, playerName}: Props) {
-    return <div className="scrollbar-thin scrollbar-thumb-sky-100 py-4 flex flex-col items-center overflow-auto">
+    const lastTeam = activeTeams[activeTeams.length - 1];
+
+    return <div className="py-4 flex flex-col items-center ">
         <TitleInput placeholder={"Player Name"} onSubmit={onSearch} value={playerName}/>
         {activeTeams.length > 0 || <Arrow/>}
-        {activeTeams.map((team, index) => <ConnectionBox key={index} playerName={"Michael Jordan"}
-                                                         teamName={team.season + " " + team.team_name}/>)}
+        {/*TODO: Make own component probably*/}
+        <div className="scrollbar overflow-auto">
+            {activeTeams.slice(0, -1).map((team, index) => <ConnectionBox key={index} playerName={"Michael Jordan"}
+                                                                          teamName={team.season + " " + team.team_name}/>)}
+            {activeTeams.length > 0 && <ConnectionBox teamName={lastTeam.season + " " + lastTeam.team_name}/>}
+        </div>
         <TitleInput placeholder={"Find Connection"} onSubmit={onFind}/>
     </div>
 }
