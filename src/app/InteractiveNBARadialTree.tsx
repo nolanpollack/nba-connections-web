@@ -13,7 +13,7 @@ function TeamInfo({
     return (
         <div
             className={
-                "absolute rounded-md bg-stone-200 p-4 border-black shadow-xl top-2 left-2 divide-y"
+                "absolute left-2 top-2 divide-y rounded-md border-black bg-stone-300 p-4 shadow-xl"
             }
             style={{
                 top: popupPosition.y,
@@ -23,15 +23,13 @@ function TeamInfo({
             <h1 className="text-xl">
                 {popupData.season + " " + popupData.team_name}
             </h1>
-            <h2>{}</h2>
-            <ul>
-                {popupData.players?.map((player) => (
-                    <li key={player.id}>
-                        {/*<Image src={getHeadshotURL(player.id)} alt="headshot" width={52} height={38}/>*/}
-                        {player.name}
-                    </li>
-                ))}
-            </ul>
+            {/*<ul>*/}
+            {/*    {popupData.players?.map((player) => (*/}
+            {/*        <li key={player.id}>*/}
+            {/*            {player.name}*/}
+            {/*        </li>*/}
+            {/*    ))}*/}
+            {/*</ul>*/}
         </div>
     );
 }
@@ -85,7 +83,9 @@ export default function InteractiveNBARadialTree({
 
     createPaths(dataNode, dataNode, data_wrapper);
 
-    const [activeTeams, setActiveTeams] = useState([] as TeamNode[]);
+    const [activePath, setActivePath] = useState(
+        [] as [PlayerNode, TeamNode][],
+    );
 
     const [popupOpen, setPopupOpen] = useState(false);
     const [popupData, setPopupData] = useState({} as TeamNode);
@@ -110,55 +110,44 @@ export default function InteractiveNBARadialTree({
             const playerID = nameToPlayerID[playerName.toLowerCase()];
             if (!playerID) {
                 console.log("Player not found: " + playerName);
-                setActiveTeams([]);
+                setActivePath([]);
                 return;
             }
 
             let player = playerMap[playerID];
-            const path = [
-                [player.player, null] as [PlayerNode, TeamNode | null],
-            ];
+
+            const path = [] as [PlayerNode, TeamNode][];
 
             while (player.player != dataNode) {
-                path.unshift([player.previousPlayer, player.through]);
+                path.unshift([player.player, player.through]);
                 player = playerMap[player.previousPlayer.id];
             }
 
-            const newActiveTeams = path
-                .map(([_, team]) => team)
-                .filter((team) => team != null) as TeamNode[];
-
-            setActiveTeams(newActiveTeams);
+            setActivePath(path);
         } else {
-            setActiveTeams([]);
+            setActivePath([]);
         }
     }
 
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
     return (
-        <div className="flex flex-1 h-full">
+        <div className="flex h-full w-full justify-start">
             <SideBar
                 onFind={onToSubmit}
                 onSearch={handleSearch}
-                activeTeams={activeTeams}
+                activePath={activePath}
                 playerName={dataNode.name}
             />
             <RadialTree
                 data={data_wrapper}
                 handlePathHover={handlePathHover}
                 handlePopupClose={handlePopupClose}
-                activeTeams={activeTeams}
+                activeTeams={activePath.map(([_, team]) => team)}
             />
             {popupOpen && (
                 <TeamInfo popupPosition={popupPosition} popupData={popupData} />
             )}
         </div>
-    );
-}
-
-function getHeadshotURL(playerID: number) {
-    return (
-        "https://cdn.nba.com/headshots/nba/latest/260x190/" + playerID + ".png"
     );
 }

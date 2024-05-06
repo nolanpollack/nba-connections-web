@@ -13,7 +13,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "cdn.nba.com",
+                hostname: "ak-static.cms.nba.com",
                 port: "",
             },
         ],

@@ -22,7 +22,7 @@ export default function RadialTree({
     const height = 1000;
     const cx = 0;
     const cy = 0;
-    const radius = Math.min(width, width) / 2 + 50;
+    const radius = Math.min(width, width) / 2 + 30;
 
     const tree = d3
         .tree<TeamNode>()

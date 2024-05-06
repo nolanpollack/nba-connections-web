@@ -1,18 +1,19 @@
 "use client";
 import InteractiveNBARadialTree from "@/app/InteractiveNBARadialTree";
-import lebronData from "@/app/paths_teams_lebron.json";
+import lebronData from "@/app/paths_teams_victor_wembanyama.json";
 import TitleInput from "@/app/components/TitleInput";
 import React, { FormEvent, useState } from "react";
 import ConnectionsResponseData from "@/app/classes/ConnectionsResponseData";
 import { PlayerNode } from "@/app/classes/Nodes";
 import basketball from "@/assets/basketball.svg";
 import Image from "next/image";
+import SearchPage from "@/app/components/SearchPage";
 
 export default function Home() {
-    const [data, setData] = useState<PlayerNode>(lebronData);
+    const [data, setData] = useState<PlayerNode>();
     const [loading, setLoading] = useState<boolean>(false);
 
-    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    async function getPlayerData(e: FormEvent<HTMLFormElement>) {
         if (loading) {
             return;
         }
@@ -28,7 +29,7 @@ export default function Home() {
         }
 
         setLoading(true);
-        // setData([])
+        setData(undefined);
         // setFirstPlayer(p1.toString());
         setTimeout(async () => {
             try {
@@ -39,31 +40,27 @@ export default function Home() {
                 //     const connections = data.map((item: any) => new ConnectionsResponseData(item[0], item[1], item[2]));
                 //     setData(connections);
                 // }
-                setData(lebronData);
+                // setData(lebronData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         }, 1000);
     }
 
     return (
-        <main className="flex items-center justify-center min-h-screen h-full">
+        <main className="flex h-full items-center justify-center">
             {!data && (
-                <TitleInput
-                    placeholder={"Player Name"}
-                    onSubmit={handleSubmit}
-                    required={true}
-                />
-            )}
-            {loading && (
-                <Image src={basketball} alt="loading" className="w-14" />
+                <SearchPage
+                    onSubmit={getPlayerData}
+                    loading={loading}
+                ></SearchPage>
             )}
             {!loading && data && (
                 <InteractiveNBARadialTree
                     dataNode={data}
-                    handleSearch={handleSubmit}
+                    handleSearch={getPlayerData}
                 />
             )}
         </main>
