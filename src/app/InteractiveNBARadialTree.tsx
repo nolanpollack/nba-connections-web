@@ -131,6 +131,11 @@ export default function InteractiveNBARadialTree({
 
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
+    // function onSearch(e: FormEvent<HTMLFormElement>) {
+    //     setActivePath([]);
+    //     handleSearch(e);
+    // }
+
     return (
         <div className="flex h-full w-full justify-start">
             <SideBar

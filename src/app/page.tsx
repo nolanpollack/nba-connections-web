@@ -9,6 +9,13 @@ import basketball from "@/assets/basketball.svg";
 import Image from "next/image";
 import SearchPage from "@/app/components/SearchPage";
 
+async function fetchConnectionResponse(player: string) {
+    const params = new URLSearchParams({ player });
+    const url = "/api/find-connection?" + params;
+    console.log(url);
+    return await fetch(url);
+}
+
 export default function Home() {
     const [data, setData] = useState<PlayerNode>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -29,22 +36,24 @@ export default function Home() {
         }
 
         setLoading(true);
-        setData(undefined);
+        // setData(undefined);
         // setFirstPlayer(p1.toString());
         setTimeout(async () => {
             try {
-                // const response = await fetchConnectionResponse(p1.toString(), p2.toString());
-                //
-                // if (response.status === 200) {
-                //     const data = await response.json();
-                //     const connections = data.map((item: any) => new ConnectionsResponseData(item[0], item[1], item[2]));
-                //     setData(connections);
-                // }
+                const response = await fetchConnectionResponse(
+                    playerName.toLowerCase(),
+                );
+
+                if (response.status === 200) {
+                    const returnedData = (await response.json()) as PlayerNode;
+                    console.log(returnedData);
+                    setData(returnedData);
+                }
                 // setData(lebronData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
-                // setLoading(false);
+                setLoading(false);
             }
         }, 1000);
     }
@@ -57,7 +66,7 @@ export default function Home() {
                     loading={loading}
                 ></SearchPage>
             )}
-            {!loading && data && (
+            {data && (
                 <InteractiveNBARadialTree
                     dataNode={data}
                     handleSearch={getPlayerData}
