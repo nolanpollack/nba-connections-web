@@ -22,6 +22,27 @@ export default function TitleInput({
         onSubmit(e);
     }
 
+    const inputElement = (
+        <input
+            id={"player"}
+            name={"player"}
+            className={
+                "box-shadow-xl bg-gradient-to-r from-purple-600 to-yellow-600 bg-clip-text font-extrabold " +
+                "text-transparent caret-stone-900 placeholder:text-stone-700 focus:outline-none " +
+                "dark:caret-stone-300/30 " +
+                className
+            }
+            style={{
+                textAlign: centered ? "center" : "left",
+            }}
+            type={"text"}
+            placeholder={placeholder}
+            maxLength={24}
+            required={required}
+            defaultValue={value}
+        />
+    );
+
     return (
         <form
             className="overflow-visible"
@@ -29,23 +50,15 @@ export default function TitleInput({
             noValidate
             spellCheck={false}
         >
-            <input
-                name={"player"}
-                className={
-                    "box-shadow-xl bg-gradient-to-r from-purple-600 to-yellow-600 bg-clip-text font-extrabold " +
-                    "text-transparent caret-stone-900 placeholder:text-stone-600 focus:outline-none " +
-                    "dark:caret-stone-300/30 " +
-                    className
-                }
-                style={{
-                    textAlign: centered ? "center" : "left",
-                }}
-                type={"text"}
-                placeholder={placeholder}
-                maxLength={24}
-                required={required}
-                defaultValue={value}
-            />
+            {label && (
+                <fieldset className="rounded-lg border-2 border-stone-400 pb-3">
+                    <legend className="text-md ml-4 px-2 font-semibold text-stone-400">
+                        {label}
+                    </legend>
+                    {inputElement}
+                </fieldset>
+            )}
+            {!label && inputElement}
         </form>
     );
 }

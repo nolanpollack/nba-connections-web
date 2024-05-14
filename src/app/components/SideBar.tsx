@@ -1,6 +1,6 @@
 import TitleInput from "@/app/components/TitleInput";
 import React from "react";
-import ConnectionBox from "@/app/ConnectionBox";
+import ConnectionBox from "@/app/components/ConnectionBox";
 import Arrow from "@/app/components/Arrow";
 import { PlayerNode, TeamNode } from "@/app/classes/Nodes";
 
@@ -9,6 +9,7 @@ interface Props {
     onFind: (e: React.FormEvent<HTMLFormElement>) => void;
     activePath: [PlayerNode, TeamNode][];
     playerName: string;
+    loading: boolean;
 }
 
 function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
@@ -47,6 +48,7 @@ export default function SideBar({
     onFind,
     activePath,
     playerName,
+    loading,
 }: Props) {
     return (
         <div className="flex h-full flex-col justify-center py-4 pl-10">
@@ -56,6 +58,9 @@ export default function SideBar({
                 value={playerName}
                 className="text-4xl xl:text-5xl"
             />
+            {loading && (
+                <hr className="animated-gradient mt-1 h-1 rounded-md border-none bg-gradient-to-r from-purple-700 to-orange-600"></hr>
+            )}
             {activePath.length > 0 || <Arrow />}
             {activePath.length > 0 && PlayerPath({ activePath })}
             <TitleInput

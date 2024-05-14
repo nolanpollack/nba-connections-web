@@ -25,22 +25,24 @@ function TeamInfo({
             </h1>
             <ul>
                 {popupData.players?.map((player) => (
-                    <li key={player.id}>
-                        {player.name}
-                    </li>
+                    <li key={player.id}>{player.name}</li>
                 ))}
             </ul>
         </div>
     );
 }
 
+interface Props {
+    dataNode: PlayerNode;
+    onSearch: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+    loading: boolean;
+}
+
 export default function InteractiveNBARadialTree({
     dataNode,
-    handleSearch,
-}: {
-    dataNode: PlayerNode;
-    handleSearch: (e: FormEvent<HTMLFormElement>) => Promise<void>;
-}) {
+    onSearch,
+    loading,
+}: Props) {
     const data_wrapper = {
         id: 0,
         team_name: "root",
@@ -101,7 +103,7 @@ export default function InteractiveNBARadialTree({
         setPopupOpen(false);
     }
 
-    function onToSubmit(e: FormEvent<HTMLFormElement>) {
+    function handleFindConnection(e: FormEvent<HTMLFormElement>) {
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
         const playerName = formData.get("player") as string | null;
@@ -129,20 +131,23 @@ export default function InteractiveNBARadialTree({
         }
     }
 
-    dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
+    // Should probably learn how promises work better to implement this
+    function handleSearch(e: FormEvent<HTMLFormElement>) {
+        onSearch(e).then((_) => {
+            setActivePath([]);
+        });
+    }
 
-    // function onSearch(e: FormEvent<HTMLFormElement>) {
-    //     setActivePath([]);
-    //     handleSearch(e);
-    // }
+    dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
     return (
         <div className="flex h-full w-full justify-start">
             <SideBar
-                onFind={onToSubmit}
+                onFind={handleFindConnection}
                 onSearch={handleSearch}
                 activePath={activePath}
                 playerName={dataNode.name}
+                loading={loading}
             />
             <RadialTree
                 data={data_wrapper}
