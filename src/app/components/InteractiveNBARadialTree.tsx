@@ -23,13 +23,13 @@ function TeamInfo({
             <h1 className="text-xl">
                 {popupData.season + " " + popupData.team_name}
             </h1>
-            {/*<ul>*/}
-            {/*    {popupData.players?.map((player) => (*/}
-            {/*        <li key={player.id}>*/}
-            {/*            {player.name}*/}
-            {/*        </li>*/}
-            {/*    ))}*/}
-            {/*</ul>*/}
+            <ul>
+                {popupData.players?.map((player) => (
+                    <li key={player.id}>
+                        {player.name}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
