@@ -10,7 +10,7 @@ interface Props {
 
 export default function SearchPage({ onSubmit, loading, playerList }: Props) {
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col">
             {!loading && (
                 <PlayerForm
                     placeholder={"LeBron James"}
