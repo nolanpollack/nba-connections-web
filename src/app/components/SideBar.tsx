@@ -1,16 +1,8 @@
-import TitleInput from "@/app/components/TitleInput";
+import PlayerForm from "@/app/components/PlayerForm";
 import React from "react";
 import ConnectionBox from "@/app/components/ConnectionBox";
 import Arrow from "@/app/components/Arrow";
 import { PlayerNode, TeamNode } from "@/app/classes/Nodes";
-
-interface Props {
-    onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
-    onFind: (e: React.FormEvent<HTMLFormElement>) => void;
-    activePath: [PlayerNode, TeamNode][];
-    playerName: string;
-    loading: boolean;
-}
 
 function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
     if (activePath.length === 0) {
@@ -43,6 +35,14 @@ function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
     );
 }
 
+interface Props {
+    onSearch: (playerName: string) => void;
+    onFind: (playerName: string) => void;
+    activePath: [PlayerNode, TeamNode][];
+    playerName: string;
+    loading: boolean;
+}
+
 export default function SideBar({
     onSearch,
     onFind,
@@ -52,10 +52,10 @@ export default function SideBar({
 }: Props) {
     return (
         <div className="flex h-full w-1/3 flex-col justify-center overflow-visible pl-10">
-            <TitleInput
+            <PlayerForm
                 placeholder={"Player Name"}
                 onSubmit={onSearch}
-                value={playerName}
+                defaultValue={playerName}
                 className="text-4xl xl:text-5xl"
             />
             {loading && (
@@ -63,7 +63,7 @@ export default function SideBar({
             )}
             {activePath.length > 0 || <Arrow />}
             {activePath.length > 0 && PlayerPath({ activePath })}
-            <TitleInput
+            <PlayerForm
                 placeholder={"Find Connection"}
                 onSubmit={onFind}
                 className="text-4xl xl:text-5xl"

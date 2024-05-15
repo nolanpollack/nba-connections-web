@@ -3,6 +3,7 @@ import InteractiveNBARadialTree from "@/app/components/InteractiveNBARadialTree"
 import React, { FormEvent, useState } from "react";
 import { PlayerNode } from "@/app/classes/Nodes";
 import SearchPage from "@/app/components/SearchPage";
+import players from "@/app/data/players.json";
 
 async function fetchConnectionResponse(player: string) {
     const params = new URLSearchParams({ player });
@@ -14,14 +15,11 @@ export default function Home() {
     const [data, setData] = useState<PlayerNode>();
     const [loading, setLoading] = useState<boolean>(false);
 
-    async function handlePlayerSearch(e: FormEvent<HTMLFormElement>) {
+    async function handlePlayerSearch(playerName: string) {
         if (loading) {
             return;
         }
 
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-        const playerName = formData.get("player") as string | null;
         if (
             !playerName ||
             playerName.toLowerCase() == data?.name.toLowerCase()
@@ -50,12 +48,23 @@ export default function Home() {
         }, 0);
     }
 
+    const playerList = Array.from(
+        new Set(
+            players
+                .map((player) => player[3])
+                .filter(
+                    (playerName) => typeof playerName === "string",
+                ) as string[],
+        ),
+    );
+
     return (
         <main className="flex h-full items-center justify-center">
             {!data && (
                 <SearchPage
                     onSubmit={handlePlayerSearch}
                     loading={loading}
+                    playerList={playerList}
                 ></SearchPage>
             )}
             {data && (

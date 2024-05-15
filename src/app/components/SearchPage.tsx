@@ -1,25 +1,24 @@
-import TitleInput from "@/app/components/TitleInput";
+import PlayerForm from "@/app/components/PlayerForm";
 import React from "react";
-import Image from "next/image";
-import basketball from "@/assets/basketball.svg";
 import LoadingWheel from "@/app/components/LoadingWheel";
 
 interface Props {
-    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    onSubmit: (playerName: string) => void;
     loading: boolean;
+    playerList: string[];
 }
 
-export default function SearchPage({ onSubmit, loading }: Props) {
+export default function SearchPage({ onSubmit, loading, playerList }: Props) {
     return (
         <div className="flex flex-col items-center">
             {!loading && (
-                <TitleInput
+                <PlayerForm
                     placeholder={"LeBron James"}
                     onSubmit={onSubmit}
                     required={true}
-                    centered={true}
-                    className="text-5xl lg:text-7xl"
+                    className="text-center text-5xl lg:text-7xl"
                     label={"Player Name"}
+                    suggestions={playerList}
                 />
             )}
             {loading && <LoadingWheel />}

@@ -34,7 +34,7 @@ function TeamInfo({
 
 interface Props {
     dataNode: PlayerNode;
-    onSearch: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+    onSearch: (playerName: string) => Promise<void>;
     loading: boolean;
 }
 
@@ -103,11 +103,7 @@ export default function InteractiveNBARadialTree({
         setPopupOpen(false);
     }
 
-    function handleFindConnection(e: FormEvent<HTMLFormElement>) {
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-        const playerName = formData.get("player") as string | null;
-
+    function handleFindConnection(playerName: string) {
         if (playerName) {
             const playerID = nameToPlayerID[playerName.toLowerCase()];
             if (!playerID) {
@@ -132,8 +128,8 @@ export default function InteractiveNBARadialTree({
     }
 
     // Should probably learn how promises work better to implement this
-    function handleSearch(e: FormEvent<HTMLFormElement>) {
-        onSearch(e).then((_) => {
+    function handleSearch(playerName: string) {
+        onSearch(playerName).then((_) => {
             setActivePath([]);
         });
     }
