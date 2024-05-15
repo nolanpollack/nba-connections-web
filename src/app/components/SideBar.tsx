@@ -21,8 +21,8 @@ function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
 
     return (
         <div
-            className="mr-4 overflow-auto pr-10 scrollbar scrollbar-thumb-stone-700
-        scrollbar-thumb-rounded-xl scrollbar-w-1 hover:scrollbar-thumb-stone-600 active:scrollbar-thumb-stone-500"
+            className="self-start overflow-auto pr-4 scrollbar scrollbar-thumb-stone-700
+        scrollbar-thumb-rounded-xl scrollbar-w-1.5 hover:scrollbar-thumb-stone-600 active:scrollbar-thumb-stone-500"
         >
             {activePath.slice(0, -1).map(([player, team]) => (
                 <ConnectionBox
@@ -51,7 +51,7 @@ export default function SideBar({
     loading,
 }: Props) {
     return (
-        <div className="flex h-full flex-col justify-center py-4 pl-10">
+        <div className="flex h-full w-1/3 flex-col justify-center overflow-visible pl-10">
             <TitleInput
                 placeholder={"Player Name"}
                 onSubmit={onSearch}

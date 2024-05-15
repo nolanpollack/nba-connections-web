@@ -45,7 +45,7 @@ export default function TitleInput({
 
     return (
         <form
-            className="overflow-visible"
+            // className={}
             onSubmit={onSubmitWrap}
             noValidate
             spellCheck={false}
