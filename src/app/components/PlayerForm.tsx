@@ -29,7 +29,6 @@ function Input({
             placeholder={placeholder}
             maxLength={LONGEST_PLAYER_NAME}
             required={required}
-            // defaultValue={defaultValue}
             onChange={onChange}
             value={value}
         />
@@ -50,11 +49,11 @@ function SuggestionBox({
     }
 
     return (
-        <div className="rounded-lg bg-stone-400">
-            <ul className="flex flex-col divide-y divide-stone-300">
+        <div className="rounded-md bg-stone-400 py-1">
+            <ul className="flex flex-col divide-y divide-stone-500 text-xl">
                 {suggestions.slice(0, 5).map((suggestion) => (
                     <button
-                        className="p-2"
+                        className="p-2 hover:bg-stone-500 active:bg-stone-600"
                         onClick={handleSubmit}
                         key={suggestion}
                     >
@@ -110,7 +109,6 @@ export default function PlayerForm({
                 ),
             );
         }
-        console.log(e.target.value);
     }
 
     function handleAutoCompleteSubmit(e: FormEvent<HTMLButtonElement>) {
@@ -139,7 +137,7 @@ export default function PlayerForm({
                     value={value}
                 />
             </fieldset>
-            {autoComplete && (
+            {autoComplete.length > 0 && (
                 <SuggestionBox
                     suggestions={autoComplete}
                     onSubmit={handleAutoCompleteSubmit}

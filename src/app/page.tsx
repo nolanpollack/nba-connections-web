@@ -1,14 +1,23 @@
 "use client";
 import InteractiveNBARadialTree from "@/app/components/InteractiveNBARadialTree";
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import { PlayerNode } from "@/app/classes/Nodes";
 import SearchPage from "@/app/components/SearchPage";
 import players from "@/app/data/players.json";
 
-async function fetchConnectionResponse(player: string) {
-    const params = new URLSearchParams({ player });
-    const url = "/api/find-connection?" + params;
-    return await fetch(url);
+async function fetchConnectionResponse(playerName: string) {
+    try {
+        const player = playerName.toLowerCase();
+        const params = new URLSearchParams({ player });
+        const url = "/api/find-connection?" + params;
+        const response = await fetch(url);
+
+        if (response.status === 200) {
+            return (await response.json()) as PlayerNode;
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
 }
 
 export default function Home() {
@@ -20,6 +29,7 @@ export default function Home() {
             return;
         }
 
+        // No need to search if the player name is empty or the same as the current player
         if (
             !playerName ||
             playerName.toLowerCase() == data?.name.toLowerCase()
@@ -28,26 +38,16 @@ export default function Home() {
         }
 
         setLoading(true);
-
-        setTimeout(async () => {
-            try {
-                const response = await fetchConnectionResponse(
-                    playerName.toLowerCase(),
-                );
-
-                if (response.status === 200) {
-                    const returnedData = (await response.json()) as PlayerNode;
-                    console.log(returnedData);
-                    setData(returnedData);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }, 0);
+        const returnedData = await fetchConnectionResponse(playerName);
+        if (!returnedData) {
+            // TODO: Show error message
+        } else {
+            setData(returnedData);
+        }
+        setLoading(false);
     }
 
+    // Set to remove duplicate player names
     const playerList = Array.from(
         new Set(
             players
@@ -65,7 +65,7 @@ export default function Home() {
                     onSubmit={handlePlayerSearch}
                     loading={loading}
                     playerList={playerList}
-                ></SearchPage>
+                />
             )}
             {data && (
                 <InteractiveNBARadialTree

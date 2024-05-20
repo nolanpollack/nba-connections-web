@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import RadialTree from "@/app/components/RadialTree";
 import { PlayerNode, TeamNode } from "@/app/classes/Nodes";
 import SideBar from "@/app/components/SideBar";
