@@ -1,8 +1,6 @@
 import Arrow from "@/app/components/Arrow";
-import { getColors, getMainColor, getSecondaryColor } from "nba-color";
+import { getMainColor } from "nba-color";
 import { getTeamAbbreviation } from "@/app/utils/getTeamAbbreviation";
-import getHeadshotURL from "@/app/utils/getHeadshotURL";
-import Image from "next/image";
 import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 
 interface Props {
@@ -25,7 +23,6 @@ export default function ConnectionBox({
     }
 
     const mainColor = getMainColor(abbr);
-    const secondaryColor = getSecondaryColor(abbr);
 
     return (
         <>
