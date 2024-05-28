@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import React from "react";
 import { TeamNode } from "@/app/classes/Nodes";
 import Path from "@/app/components/Path";
+import { HierarchyPointNode } from "d3";
 
 interface Props {
     data: TeamNode;
@@ -19,8 +20,6 @@ export default function RadialTree({
     const numLayers = 100;
     const width = 1000;
     const height = 1000;
-    const cx = -width / 2;
-    const cy = -height / 2;
     const radius = width / 2;
 
     const tree = d3
@@ -34,37 +33,44 @@ export default function RadialTree({
             .hierarchy(data, (d) => d.players?.map((p) => p.teams ?? []).flat())
             .sort((a, b) => d3.ascending(a.data.team_name, b.data.team_name)),
     );
-    // log max depth of tree
-    console.log(
-        `max node.y: ${root
-            .descendants()
-            .map((node) => node.y)
-            .reduce((a, b) => Math.max(a, b))}`,
-    );
 
-    const gCos = root
+    function getHeight(node: HierarchyPointNode<TeamNode>) {
+        const hypotenuse = node.y;
+        const angle = node.x;
+
+        return hypotenuse * Math.cos(angle);
+    }
+
+    function getWidth(node: HierarchyPointNode<TeamNode>) {
+        return node.y * Math.sin(node.x);
+    }
+
+    const maxHeight = root
         .descendants()
-        .map((node) => node.y * Math.cos((node.x * 180) / Math.PI - 90));
-    const gSin = root
+        .map(getHeight)
+        .reduce((a, b) => Math.max(a, b));
+    const maxWidth = root
         .descendants()
-        .map((node) => node.y * Math.sin((node.x * 180) / Math.PI - 90));
-    const gTop = gCos.reduce((a, b) => Math.min(a, b));
-    const gBottom = gCos.reduce((a, b) => Math.max(a, b));
-    const gLeft = gSin.reduce((a, b) => Math.min(a, b));
-    const gRight = gSin.reduce((a, b) => Math.max(a, b));
-
-    const gHeight = gBottom - gTop;
-    const gWidth = gRight - gLeft;
+        .map(getWidth)
+        .reduce((a, b) => Math.max(a, b));
+    const minHeight = root
+        .descendants()
+        .map(getHeight)
+        .reduce((a, b) => Math.min(a, b));
+    const minWidth = root
+        .descendants()
+        .map(getWidth)
+        .reduce((a, b) => Math.min(a, b));
 
     console.log(
-        `gTop: ${gTop}, gBottom: ${gBottom}, gLeft: ${gLeft}, gRight: ${gRight} gHeight: ${gHeight}, gWidth: ${gWidth}`,
+        `minHeight: ${minHeight} minWidth: ${minWidth} maxHeight: ${maxHeight} maxWidth: ${maxWidth}`,
     );
 
     return (
         <svg
-            viewBox={`${cx} ${cy} ${width} ${height}`}
-            className="text-md flex-grow touch-none p-2"
-            height={window.innerHeight}
+            viewBox={`${minWidth} ${-maxHeight} ${maxWidth - minWidth} ${maxHeight - minHeight}`}
+            className="text-md flex-grow touch-none pr-10"
+            // height={window.innerHeight}
         >
             <g fill="none" stroke="#555" strokeOpacity={0.3} strokeWidth={1}>
                 {root
@@ -88,20 +94,12 @@ export default function RadialTree({
                         <circle
                             key={i}
                             r={1}
-                            className={`fill-stone-400 height:${node.y * Math.cos((node.x * 180) / Math.PI - 90)}`}
+                            className={`fill-stone-400 height:${getHeight(node)} radians:${node.x}`}
                             id={node.data.team_name}
                             transform={`rotate(${(node.x * 180) / Math.PI - 90}) translate(${node.y},0)`}
                         ></circle>
                     ))}
             </g>
-            {/* <rect */}
-            {/*     width={gWidth} */}
-            {/*     height={gHeight} */}
-            {/*     x={-500} */}
-            {/*     y={-500} */}
-            {/*     fill={"transparent"} */}
-            {/*     className={"fill-transparent stroke-rose-500"} */}
-            {/* /> */}
         </svg>
     );
 }
