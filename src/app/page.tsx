@@ -2,8 +2,7 @@
 import InteractiveNBARadialTree from "@/app/components/InteractiveNBARadialTree";
 import React, { useState } from "react";
 import { PlayerNode } from "@/app/classes/Nodes";
-import SearchPage from "@/app/components/SearchPage";
-import players from "@/app/data/players.json";
+import SearchPage from "./components/SearchPage";
 
 async function fetchConnectionResponse(playerName: string) {
     try {
@@ -47,25 +46,10 @@ export default function Home() {
         setLoading(false);
     }
 
-    // Set to remove duplicate player names
-    const playerList = Array.from(
-        new Set(
-            players
-                .map((player) => player[3])
-                .filter(
-                    (playerName) => typeof playerName === "string",
-                ) as string[],
-        ),
-    );
-
     return (
         <main className="flex h-full items-center justify-center">
             {!data && (
-                <SearchPage
-                    onSubmit={handlePlayerSearch}
-                    loading={loading}
-                    playerList={playerList}
-                />
+                <SearchPage onSubmit={handlePlayerSearch} loading={loading} />
             )}
             {data && (
                 <InteractiveNBARadialTree

@@ -17,10 +17,8 @@ export default function RadialTree({
     handlePopupClose,
     activeTeams,
 }: Props) {
-    const numLayers = 100;
-    const width = 1000;
-    const height = 1000;
-    const radius = width / 2;
+    // Arbitrary, but defines the sizing of ther
+    const radius = 500;
 
     const tree = d3
         .tree<TeamNode>()
@@ -35,10 +33,7 @@ export default function RadialTree({
     );
 
     function getHeight(node: HierarchyPointNode<TeamNode>) {
-        const hypotenuse = node.y;
-        const angle = node.x;
-
-        return hypotenuse * Math.cos(angle);
+        return node.y * Math.cos(node.x);
     }
 
     function getWidth(node: HierarchyPointNode<TeamNode>) {
@@ -69,36 +64,29 @@ export default function RadialTree({
     return (
         <svg
             viewBox={`${minWidth} ${-maxHeight} ${maxWidth - minWidth} ${maxHeight - minHeight}`}
-            className="text-md flex-grow touch-none pr-10"
-            // height={window.innerHeight}
+            className="text-md flex-grow touch-none py-10 pr-10"
         >
             <g fill="none" stroke="#555" strokeOpacity={0.3} strokeWidth={1}>
-                {root
-                    .links()
-                    .filter((link) => link.source.depth < numLayers)
-                    .map((link, i) => (
-                        <Path
-                            key={i}
-                            link={link}
-                            handlePathHover={handlePathHover}
-                            handlePopupClose={handlePopupClose}
-                            activeTeams={activeTeams}
-                        />
-                    ))}
+                {root.links().map((link, i) => (
+                    <Path
+                        key={i}
+                        link={link}
+                        handlePathHover={handlePathHover}
+                        handlePopupClose={handlePopupClose}
+                        activeTeams={activeTeams}
+                    />
+                ))}
             </g>
             <g>
-                {root
-                    .descendants()
-                    .filter((node) => node.depth < numLayers + 1)
-                    .map((node, i) => (
-                        <circle
-                            key={i}
-                            r={1}
-                            className={`fill-stone-400 height:${getHeight(node)} radians:${node.x}`}
-                            id={node.data.team_name}
-                            transform={`rotate(${(node.x * 180) / Math.PI - 90}) translate(${node.y},0)`}
-                        ></circle>
-                    ))}
+                {root.descendants().map((node, i) => (
+                    <circle
+                        key={i}
+                        r={1}
+                        className={`fill-stone-400 height:${getHeight(node)} radians:${node.x}`}
+                        id={node.data.team_name}
+                        transform={`rotate(${(node.x * 180) / Math.PI - 90}) translate(${node.y},0)`}
+                    ></circle>
+                ))}
             </g>
         </svg>
     );

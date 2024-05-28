@@ -6,6 +6,8 @@ interface Props {
     required?: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     value?: string;
+    onFocus?: () => void;
+    onBlur?: () => void;
 }
 
 export default function Input({
@@ -14,6 +16,8 @@ export default function Input({
     required = true,
     onChange,
     value,
+    onFocus,
+    onBlur,
 }: Props) {
     return (
         <input
@@ -31,6 +35,8 @@ export default function Input({
             required={required}
             onChange={onChange}
             value={value}
+            onFocus={onFocus}
+            onBlur={onBlur}
         />
     );
 }

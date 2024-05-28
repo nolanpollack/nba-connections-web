@@ -5,10 +5,9 @@ import LoadingWheel from "@/app/components/LoadingWheel";
 interface Props {
     onSubmit: (playerName: string) => void;
     loading: boolean;
-    playerList: string[];
 }
 
-export default function SearchPage({ onSubmit, loading, playerList }: Props) {
+export default function SearchPage({ onSubmit, loading }: Props) {
     return (
         <div className="flex flex-col">
             {!loading && (
@@ -18,7 +17,6 @@ export default function SearchPage({ onSubmit, loading, playerList }: Props) {
                     required={true}
                     className="text-center text-5xl lg:text-7xl"
                     label={"Player Name"}
-                    suggestions={playerList}
                 />
             )}
             {loading && <LoadingWheel />}

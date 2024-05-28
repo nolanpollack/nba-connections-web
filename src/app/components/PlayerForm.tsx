@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from "react";
 import SuggestionBox from "@/app/components/SuggestionBox";
 import Input from "@/app/components/Input";
+import players from "@/app/data/players.json";
 
 interface Props {
     placeholder: string;
@@ -9,7 +10,6 @@ interface Props {
     defaultValue?: string;
     className?: string;
     label?: string;
-    suggestions?: string[];
 }
 
 export default function PlayerForm({
@@ -19,10 +19,23 @@ export default function PlayerForm({
     defaultValue,
     className,
     label,
-    suggestions,
 }: Props) {
     const [autoComplete, setAutoComplete] = useState<string[]>([]);
     const [value, setValue] = useState<string>(defaultValue || "");
+    const [showAutoComplete, setShowAutoComplete] = useState<boolean>(false);
+    const [isMouseOver, setIsMouseOver] = useState<boolean>(false);
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+
+    // Set to remove duplicate player names
+    const playerList = Array.from(
+        new Set(
+            players
+                .map((player) => player[3])
+                .filter(
+                    (playerName) => typeof playerName === "string",
+                ) as string[],
+        ),
+    );
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -37,9 +50,9 @@ export default function PlayerForm({
         setValue(e.target.value);
         if (e.target.value === "") {
             setAutoComplete([]);
-        } else if (suggestions) {
+        } else if (playerList) {
             setAutoComplete(
-                suggestions.filter((suggestion) =>
+                playerList.filter((suggestion) =>
                     suggestion
                         .toLowerCase()
                         .includes(e.target.value.toLowerCase()),
@@ -54,8 +67,31 @@ export default function PlayerForm({
         onSubmit(e.currentTarget.textContent || "");
     }
 
+    function handleFocus() {
+        setIsFocused(true);
+        setShowAutoComplete(true);
+    }
+
+    function handleBlur() {
+        setIsFocused(false);
+        if (!isMouseOver) {
+            setShowAutoComplete(false);
+        }
+    }
+
+    function handleMouseEnter() {
+        setIsMouseOver(true);
+    }
+
+    function handleMouseOut() {
+        setIsMouseOver(false);
+        if (!isFocused) {
+            setShowAutoComplete(false);
+        } 
+    }
+
     return (
-        <form onSubmit={handleSubmit} noValidate spellCheck={false}>
+        <form onMouseOver={handleMouseEnter} onMouseOut={handleMouseOut} onSubmit={handleSubmit} noValidate spellCheck={false}>
             <fieldset
                 className={
                     label ? "rounded-lg border-2 border-stone-400 pb-3" : ""
@@ -72,9 +108,11 @@ export default function PlayerForm({
                     required={required}
                     onChange={handleInputChange}
                     value={value}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                 />
             </fieldset>
-            {autoComplete.length > 0 && (
+            {showAutoComplete && autoComplete.length > 0 && (
                 <SuggestionBox
                     suggestions={autoComplete}
                     onSubmit={handleAutoCompleteSubmit}
