@@ -13,8 +13,8 @@ function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
 
     return (
         <div
-            className="self-start overflow-auto pr-4 scrollbar scrollbar-thumb-stone-700
-        scrollbar-thumb-rounded-xl scrollbar-w-1.5 hover:scrollbar-thumb-stone-600 active:scrollbar-thumb-stone-500"
+            className="self-start overflow-auto pr-4 scrollbar scrollbar-thumb-stone-400 dark:scrollbar-thumb-stone-700
+        scrollbar-thumb-rounded-xl scrollbar-w-1.5 hover:scrollbar-thumb-stone-500 dark:hover:scrollbar-thumb-stone-600 active:scrollbar-thumb-stone-600 dark:active:scrollbar-thumb-stone-500"
         >
             {activePath.slice(0, -1).map(([player, team]) => (
                 <ConnectionBox

@@ -32,7 +32,7 @@ export default function ConnectionBox({
                     style={{
                         color: mainColor.hex,
                     }}
-                    className="box-shadow-lg ml-2 text-lg font-bold brightness-200"
+                    className="ml-2 text-lg font-bold brightness-150 drop-shadow-sm dark:brightness-200"
                 >
                     {teamSeason + " " + teamName}
                 </h2>
@@ -40,7 +40,7 @@ export default function ConnectionBox({
             {playerName && (
                 <div className="flex items-center justify-start overflow-hidden rounded-lg ">
                     {playerId && <PlayerHeadshot playerID={playerId} />}
-                    <h2 className="text-xl font-bold text-stone-300 xl:text-3xl">
+                    <h2 className="text-xl font-bold text-stone-600 xl:text-3xl dark:text-stone-300">
                         {playerName}
                     </h2>
                 </div>

@@ -20,7 +20,7 @@ export default function Path({
     const strokeProperties = useMemo(
         () => ({
             strokeWidth: active ? 3 : 1,
-            strokeOpacity: active ? 1 : 0.3,
+            strokeOpacity: active ? 1 : .5,
         }),
         [active],
     );

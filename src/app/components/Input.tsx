@@ -25,7 +25,7 @@ export default function Input({
             name={"player"}
             className={
                 "box-shadow-xl bg-gradient-to-r from-purple-600 to-yellow-600 bg-clip-text font-extrabold " +
-                "text-transparent caret-stone-900 placeholder:text-stone-700 focus:outline-none " +
+                "text-transparent caret-stone-900 placeholder:text-stone-400 focus:outline-none dark:placeholder:text-stone-700 " +
                 "dark:caret-stone-300/30 " +
                 className
             }

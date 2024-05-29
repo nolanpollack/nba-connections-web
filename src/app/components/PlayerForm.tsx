@@ -12,6 +12,7 @@ interface Props {
     label?: string;
 }
 
+// TODO: Suggestions should be absolute
 export default function PlayerForm({
     placeholder,
     onSubmit,
@@ -94,11 +95,11 @@ export default function PlayerForm({
         <form onMouseOver={handleMouseEnter} onMouseOut={handleMouseOut} onSubmit={handleSubmit} noValidate spellCheck={false}>
             <fieldset
                 className={
-                    label ? "rounded-lg border-2 border-stone-400 pb-3" : ""
+                    label ? "rounded-lg border-2 border-stone-700 dark:border-stone-400 pb-3" : ""
                 }
             >
                 {label && (
-                    <legend className="text-md ml-4 px-2 font-semibold text-stone-400">
+                    <legend className="text-md ml-4 px-2 font-semibold text-stone-700 dark:text-stone-400">
                         {label}
                     </legend>
                 )}

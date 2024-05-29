@@ -66,7 +66,7 @@ export default function RadialTree({
             viewBox={`${minWidth} ${-maxHeight} ${maxWidth - minWidth} ${maxHeight - minHeight}`}
             className="text-md flex-grow touch-none py-10 pr-10"
         >
-            <g fill="none" stroke="#555" strokeOpacity={0.3} strokeWidth={1}>
+            <g fill="none" stroke="#555" >
                 {root.links().map((link, i) => (
                     <Path
                         key={i}
@@ -82,7 +82,7 @@ export default function RadialTree({
                     <circle
                         key={i}
                         r={1}
-                        className={`fill-stone-400 height:${getHeight(node)} radians:${node.x}`}
+                        className={`fill-stone-500 dark:fill-stone-400 height:${getHeight(node)} radians:${node.x}`}
                         id={node.data.team_name}
                         transform={`rotate(${(node.x * 180) / Math.PI - 90}) translate(${node.y},0)`}
                     ></circle>
