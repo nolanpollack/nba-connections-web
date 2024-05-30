@@ -57,10 +57,6 @@ export default function RadialTree({
         .map(getWidth)
         .reduce((a, b) => Math.min(a, b));
 
-    console.log(
-        `minHeight: ${minHeight} minWidth: ${minWidth} maxHeight: ${maxHeight} maxWidth: ${maxWidth}`,
-    );
-
     return (
         <svg
             viewBox={`${minWidth} ${-maxHeight} ${maxWidth - minWidth} ${maxHeight - minHeight}`}

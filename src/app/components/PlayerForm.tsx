@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import SuggestionBox from "@/app/components/SuggestionBox";
 import Input from "@/app/components/Input";
 import players from "@/app/data/players.json";
@@ -13,6 +13,7 @@ interface Props {
 }
 
 // TODO: Suggestions should be absolute
+// TODO: Highlight when active
 export default function PlayerForm({
     placeholder,
     onSubmit,
@@ -24,7 +25,7 @@ export default function PlayerForm({
     const [autoComplete, setAutoComplete] = useState<string[]>([]);
     const [value, setValue] = useState<string>(defaultValue || "");
     const [showAutoComplete, setShowAutoComplete] = useState<boolean>(false);
-    const [isMouseOver, setIsMouseOver] = useState<boolean>(false);
+    const [isClicking, setIsClicking] = useState<boolean>(false);
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
     // Set to remove duplicate player names
@@ -65,6 +66,8 @@ export default function PlayerForm({
     function handleAutoCompleteSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
         setValue(e.currentTarget.textContent || "");
+        setAutoComplete([e.currentTarget.textContent || ""]);
+        setShowAutoComplete(false);
         onSubmit(e.currentTarget.textContent || "");
     }
 
@@ -75,27 +78,43 @@ export default function PlayerForm({
 
     function handleBlur() {
         setIsFocused(false);
-        if (!isMouseOver) {
+        if (!isClicking) {
             setShowAutoComplete(false);
         }
     }
 
-    function handleMouseEnter() {
-        setIsMouseOver(true);
+    function handleMouseDown() {
+        setIsClicking(true);
     }
 
-    function handleMouseOut() {
-        setIsMouseOver(false);
-        if (!isFocused) {
-            setShowAutoComplete(false);
-        } 
-    }
+    useEffect(() => {
+        function handleOutsideClick() {
+            if (!isClicking) {
+                setShowAutoComplete(false);
+            }
+            setIsClicking(false);
+        }
+
+        document.addEventListener("mouseup", handleOutsideClick);
+
+        return () => {
+            document.removeEventListener("mouseup", handleOutsideClick);
+        };
+    }, [isClicking, isFocused]);
 
     return (
-        <form className="relative" onMouseOver={handleMouseEnter} onMouseOut={handleMouseOut} onSubmit={handleSubmit} noValidate spellCheck={false}>
+        <form
+            onMouseDown={handleMouseDown}
+            className="relative"
+            onSubmit={handleSubmit}
+            noValidate
+            spellCheck={false}
+        >
             <fieldset
                 className={
-                    label ? "rounded-lg border-2 border-stone-700 dark:border-stone-400 pb-3" : ""
+                    label
+                        ? "rounded-lg border-2 border-stone-700 pb-3 dark:border-stone-400"
+                        : ""
                 }
             >
                 {label && (
