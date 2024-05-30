@@ -12,7 +12,6 @@ interface Props {
     label?: string;
 }
 
-// TODO: Suggestions should be absolute
 // TODO: Highlight when active
 export default function PlayerForm({
     placeholder,

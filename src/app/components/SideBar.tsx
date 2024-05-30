@@ -13,8 +13,8 @@ function PlayerPath({ activePath }: { activePath: [PlayerNode, TeamNode][] }) {
 
     return (
         <div
-            className="self-start overflow-auto pr-4 scrollbar scrollbar-thumb-stone-400 dark:scrollbar-thumb-stone-700
-        scrollbar-thumb-rounded-xl scrollbar-w-1.5 hover:scrollbar-thumb-stone-500 dark:hover:scrollbar-thumb-stone-600 active:scrollbar-thumb-stone-600 dark:active:scrollbar-thumb-stone-500"
+            className="my-2 self-start overflow-auto pr-4 scrollbar scrollbar-thumb-stone-400 scrollbar-thumb-rounded-xl
+        scrollbar-w-1.5 hover:scrollbar-thumb-stone-500 active:scrollbar-thumb-stone-600 dark:scrollbar-thumb-stone-700 dark:hover:scrollbar-thumb-stone-600 dark:active:scrollbar-thumb-stone-500"
         >
             {activePath.slice(0, -1).map(([player, team]) => (
                 <ConnectionBox
@@ -51,7 +51,7 @@ export default function SideBar({
     loading,
 }: Props) {
     return (
-        <div className="flex h-full w-1/3 flex-col justify-center overflow-visible pl-10">
+        <div className="flex h-full w-1/3 flex-col justify-center overflow-visible py-4 pl-10">
             <PlayerForm
                 placeholder={"Player Name"}
                 onSubmit={onSearch}
@@ -62,7 +62,7 @@ export default function SideBar({
                 <hr className="animated-gradient mt-1 h-1 rounded-md border-none bg-gradient-to-r from-purple-700 to-orange-600"></hr>
             )}
             {activePath.length > 0 || <Arrow />}
-            {activePath.length > 0 && PlayerPath({ activePath })}
+            {activePath.length > 0 && <PlayerPath activePath={activePath} />}
             <PlayerForm
                 placeholder={"Find Connection"}
                 onSubmit={onFind}

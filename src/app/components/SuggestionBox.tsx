@@ -15,6 +15,7 @@ export default function SuggestionBox({
 
     // TODO: Light mode
     // TODO: Scrolling
+    // TODO: Don't overflow the screen
     return (
         <div className="absolute z-10 my-1 rounded-md border bg-stone-200 py-1 shadow-xl dark:border-stone-700 dark:bg-stone-800">
             <ul className="flex flex-col text-lg font-semibold dark:divide-stone-500 dark:text-stone-200">
