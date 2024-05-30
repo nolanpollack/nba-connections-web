@@ -92,7 +92,7 @@ export default function PlayerForm({
     }
 
     return (
-        <form onMouseOver={handleMouseEnter} onMouseOut={handleMouseOut} onSubmit={handleSubmit} noValidate spellCheck={false}>
+        <form className="relative" onMouseOver={handleMouseEnter} onMouseOut={handleMouseOut} onSubmit={handleSubmit} noValidate spellCheck={false}>
             <fieldset
                 className={
                     label ? "rounded-lg border-2 border-stone-700 dark:border-stone-400 pb-3" : ""
