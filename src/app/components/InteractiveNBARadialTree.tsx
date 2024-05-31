@@ -15,14 +15,14 @@ function TeamInfo({
     return (
         <div
             className={
-                "absolute left-2 top-2 rounded-md border border-black bg-stone-300 p-4 shadow-xl dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                "absolute left-2 top-2 rounded-md dark:border bg-stone-200 p-4 shadow-xl dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
             }
             style={{
                 top: popupPosition.y,
                 left: popupPosition.x,
             }}
         >
-            <h1 className="mb-2 border-b pb-2 text-2xl font-semibold dark:border-stone-600">
+            <h1 className="mb-2 border-b border-stone-400/50 pb-2 text-2xl font-semibold dark:border-stone-600">
                 {popupData.season + " " + popupData.team_name}
             </h1>
             <ul className="text-lg">
