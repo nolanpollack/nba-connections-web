@@ -10,17 +10,20 @@ function TeamInfo({
     popupPosition: { x: number; y: number };
     popupData: TeamNode;
 }) {
-    const screenMiddle = window.innerHeight / 2;
-    console.log(screenMiddle);
+    let position: {right:number; bottom?:number; top?:number;} = {right: window.innerWidth - popupPosition.x}
+    if (popupPosition.y > window.innerHeight / 2) {
+        position.bottom= window.innerHeight - popupPosition.y;
+    }
+    else {
+        position.top = popupPosition.y;
+    }
+
     return (
         <div
             className={
-                "absolute left-2 top-2 rounded-md dark:border bg-stone-200 p-4 shadow-xl dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                "absolute rounded-md dark:border bg-stone-200 p-4 shadow-xl dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
             }
-            style={{
-                top: popupPosition.y,
-                left: popupPosition.x,
-            }}
+            style={position}
         >
             <h1 className="mb-2 border-b border-stone-400/50 pb-2 text-2xl font-semibold dark:border-stone-600">
                 {popupData.season + " " + popupData.team_name}
@@ -141,7 +144,7 @@ export default function InteractiveNBARadialTree({
     dataNode.teams?.sort((a, b) => a.season.localeCompare(b.season));
 
     return (
-        <div className="flex h-full w-full justify-start">
+        <div className="relative flex h-full w-full ">
             <SideBar
                 onFind={handleFindConnection}
                 onSearch={handleSearch}
