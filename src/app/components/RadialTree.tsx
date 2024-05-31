@@ -6,15 +6,15 @@ import { HierarchyPointNode } from "d3";
 
 interface Props {
     data: TeamNode;
-    handlePathHover: (team: TeamNode, event: React.MouseEvent) => void;
-    handlePopupClose: () => void;
+    onPathHover: (team: TeamNode, event: React.MouseEvent) => void;
+    onPopupClose: () => void;
     activeTeams: TeamNode[];
 }
 
 export default function RadialTree({
     data,
-    handlePathHover,
-    handlePopupClose,
+    onPathHover,
+    onPopupClose,
     activeTeams,
 }: Props) {
     // Arbitrary, but defines the sizing of ther
@@ -67,8 +67,8 @@ export default function RadialTree({
                     <Path
                         key={i}
                         link={link}
-                        handlePathHover={handlePathHover}
-                        handlePopupClose={handlePopupClose}
+                        handlePathHover={onPathHover}
+                        handlePopupClose={onPopupClose}
                         activeTeams={activeTeams}
                     />
                 ))}

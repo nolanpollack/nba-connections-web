@@ -10,22 +10,26 @@ function TeamInfo({
     popupPosition: { x: number; y: number };
     popupData: TeamNode;
 }) {
+    const screenMiddle = window.innerHeight / 2;
+    console.log(screenMiddle);
     return (
         <div
             className={
-                "absolute left-2 top-2 divide-y rounded-md border-black bg-stone-300 p-4 shadow-xl"
+                "absolute left-2 top-2 rounded-md border border-black bg-stone-300 p-4 shadow-xl dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
             }
             style={{
                 top: popupPosition.y,
                 left: popupPosition.x,
             }}
         >
-            <h1 className="text-xl">
+            <h1 className="mb-2 border-b pb-2 text-2xl font-semibold dark:border-stone-600">
                 {popupData.season + " " + popupData.team_name}
             </h1>
-            <ul>
+            <ul className="text-lg">
                 {popupData.players?.map((player) => (
-                    <li key={player.id}>{player.name}</li>
+                    <li className="pt-1" key={player.id}>
+                        {player.name}
+                    </li>
                 ))}
             </ul>
         </div>
@@ -147,8 +151,8 @@ export default function InteractiveNBARadialTree({
             />
             <RadialTree
                 data={data_wrapper}
-                handlePathHover={handlePathHover}
-                handlePopupClose={handlePopupClose}
+                onPathHover={handlePathHover}
+                onPopupClose={handlePopupClose}
                 activeTeams={activePath.map(([_, team]) => team)}
             />
             {popupOpen && (
