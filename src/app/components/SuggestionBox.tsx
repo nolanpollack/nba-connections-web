@@ -20,8 +20,8 @@ export default function SuggestionBox({
     return (
         <div
             style={positionAboveParent ? { bottom: "100%" } : { top: "100%" }}
-            className="absolute inset-x-0 z-10 my-1 rounded-md bg-stone-200 py-1 shadow-xl
-                dark:border dark:border-stone-700 dark:bg-stone-800"
+            className="absolute inset-x-0 z-10 my-1 rounded-md bg-stone-200 py-1 shadow-xl dark:border
+                dark:border-stone-700 dark:bg-stone-800"
         >
             <Scrollbar>
                 <ul className="flex flex-col text-lg font-semibold dark:text-stone-200">
