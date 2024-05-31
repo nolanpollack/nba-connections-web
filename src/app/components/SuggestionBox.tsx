@@ -3,9 +3,11 @@ import { FormEvent } from "react";
 export default function SuggestionBox({
     suggestions,
     onSubmit,
+    positionAboveParent = false,
 }: {
     suggestions: string[];
     onSubmit: (e: FormEvent<HTMLButtonElement>) => void;
+    positionAboveParent?: boolean;
 }) {
     function handleSubmit(e: FormEvent<HTMLButtonElement>) {
         e.preventDefault();
@@ -14,9 +16,11 @@ export default function SuggestionBox({
     }
 
     // TODO: Scrolling
-    // TODO: Don't overflow the screen
     return (
-        <div className="absolute z-10 my-1 rounded-md bg-stone-200 py-1 shadow-xl dark:border dark:border-stone-700 dark:bg-stone-800">
+        <div
+            style={positionAboveParent ? { bottom: "100%" } : { top: "100%" }}
+            className=" absolute z-10 my-1 rounded-md bg-stone-200 py-1 shadow-xl dark:border dark:border-stone-700 dark:bg-stone-800"
+        >
             <ul className="flex flex-col text-lg font-semibold dark:text-stone-200">
                 {suggestions.slice(0, 5).map((suggestion) => (
                     <button

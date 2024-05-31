@@ -67,6 +67,7 @@ export default function SideBar({
                 placeholder={"Find Connection"}
                 onSubmit={onFind}
                 className="text-4xl xl:text-5xl"
+                autoCompleteAbove={activePath.length > 0}
             />
         </div>
     );

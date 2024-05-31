@@ -10,6 +10,7 @@ interface Props {
     defaultValue?: string;
     className?: string;
     label?: string;
+    autoCompleteAbove?: boolean;
 }
 
 // TODO: Highlight when active
@@ -20,6 +21,7 @@ export default function PlayerForm({
     defaultValue,
     className,
     label,
+    autoCompleteAbove = false,
 }: Props) {
     const [autoComplete, setAutoComplete] = useState<string[]>([]);
     const [value, setValue] = useState<string>(defaultValue || "");
@@ -135,6 +137,7 @@ export default function PlayerForm({
                 <SuggestionBox
                     suggestions={autoComplete}
                     onSubmit={handleAutoCompleteSubmit}
+                    positionAboveParent={autoCompleteAbove}
                 />
             )}
         </form>
