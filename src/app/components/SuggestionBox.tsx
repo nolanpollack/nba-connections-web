@@ -16,7 +16,6 @@ export default function SuggestionBox({
         onSubmit(e);
     }
 
-    // TODO: Scrolling
     return (
         <div
             style={positionAboveParent ? { bottom: "100%" } : { top: "100%" }}
